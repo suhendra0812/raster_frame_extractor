@@ -1,10 +1,8 @@
 import os, sys
 import numpy as np
-import fiona
 import rasterio
 import rasterio.features
-from shapely.geometry import shape, mapping
-from shapely.geometry.multipolygon import MultiPolygon
+from shapely.geometry import shape
 import geopandas as gpd
 
 sys.path.append(r'D:\BARATA\11.barata_layout')
