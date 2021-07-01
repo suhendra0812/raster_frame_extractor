@@ -5,10 +5,12 @@ import rasterio.features
 from shapely.geometry import shape
 import geopandas as gpd
 
-sys.path.append(r'D:\BARATA\11.barata_layout')
-from radar_info import RadarInfo
+base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-path_list = glob.glob(r'D:\BARATA\2.seonse_outputs\*\*\*\*.tif')
+sys.path.append(os.path.join(base_path, '11.barata_layout'))
+from info.radar_info import RadarInfo
+
+path_list = glob.glob(os.path.join(base_path, '2.seonse_outputs', 'cosmo_skymed', '2020*', '*', '*.tif'))
 
 for path in path_list:
     with rasterio.open(path) as src:
@@ -35,10 +37,10 @@ for path in path_list:
     
     output_path = os.path.dirname(path).replace('2.seonse_outputs','13.frames')
     if os.path.exists(output_path):
-        gdf.to_file(f'{output_path}/{output_fname}.shp')
+        gdf.to_file(os.path.join(output_path, f'{output_fname}.shp'))
     else:
         os.makedirs(output_path)
-        gdf.to_file(f'{output_path}/{output_fname}.shp')
+        gdf.to_file(os.path.join(output_path, f'{output_fname}.shp'))
 
     #layer = QgsVectorLayer(gdf.to_json(), output_fname, 'ogr')
     #QgsProject.instance().addMapLayer(layer)
