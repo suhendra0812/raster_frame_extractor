@@ -6,6 +6,11 @@ import rasterio.features
 from shapely.geometry import shape
 import geopandas as gpd
 
+base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+sys.path.append(os.path.join(base_path, '11.barata_layout'))
+from info.radar_info import RadarInfo
+
 def extract_raster_frame(path):
     with rasterio.open(path) as src:
         crs = src.crs
@@ -23,8 +28,9 @@ def extract_raster_frame(path):
     gdf = gpd.GeoDataFrame({'DN': values}, geometry=geoms)
     gdf = gdf.dissolve(by='DN')
     gdf = gdf.loc[[1]]
-    gdf['RADAR'] = radar_info.rdr
-    gdf['MODE'] = radar_info.pola
+    gdf['RADAR'] = radar_info.rdr_fn
+    gdf['MODE'] = radar_info.mode
+    gdf['POLARISASI'] = radar_info.pola
     gdf['DATETIME'] = str(radar_info.utc_datetime)
     
     output_fname = f'{fname}_frame'
@@ -42,11 +48,6 @@ def extract_raster_frame(path):
     return gdf
 
 if __name__ == "__main__":
-    base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-    sys.path.append(os.path.join(base_path, '11.barata_layout'))
-    from info.radar_info import RadarInfo
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--filename", help="Insert raster filename")
 
