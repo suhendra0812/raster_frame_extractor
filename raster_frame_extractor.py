@@ -5,6 +5,7 @@ import rasterio
 import rasterio.features
 from shapely.geometry import shape
 import geopandas as gpd
+import zipfile
 
 base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -25,7 +26,10 @@ def extract_raster_frame(path):
     fname = os.path.splitext(os.path.basename(path))[0]
     radar_info = RadarInfo(fname)
 
-    gdf = gpd.GeoDataFrame({'DN': values}, geometry=geoms)
+    if not crs:
+        crs = "EPSG:4326"
+
+    gdf = gpd.GeoDataFrame({'DN': values}, crs=crs, geometry=geoms)
     gdf = gdf.dissolve(by='DN')
     gdf = gdf.loc[[1]]
     gdf['RADAR'] = radar_info.rdr_fn
@@ -36,11 +40,30 @@ def extract_raster_frame(path):
     output_fname = f'{fname}_frame'
     
     output_path = os.path.dirname(path).replace('2.seonse_outputs','13.frames')
-    if os.path.exists(output_path):
-        gdf.to_file(os.path.join(output_path, f'{output_fname}.shp'))
-    else:
-        os.makedirs(output_path)
-        gdf.to_file(os.path.join(output_path, f'{output_fname}.shp'))
+    os.makedirs(output_path, exist_ok=True)
+    gdf.to_file(os.path.join(output_path, f'{output_fname}.shp'))
+
+    zip_filename = f"{os.path.basename(output_path)}_frame.zip"
+
+    types = [
+        "*frame.shp",
+        "*frame.dbf",
+        "*frame.prj",
+        "*frame.shx",
+    ]
+    frame_list = []
+    for tp in types:
+        file_list = glob.glob(f"{output_path}/{tp}")
+        if len(file_list) > 0:
+            file_type = file_list[0]
+            frame_list.append(file_type)
+        else:
+            print(f"File with {os.path.splitext(tp)[-1]} extension is unavailable")
+
+    if len(types) == len(frame_list):
+        with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zip:
+            for frame in frame_list:
+                zip.write(frame)
 
     # layer = QgsVectorLayer(gdf.to_json(), output_fname, 'ogr')
     # QgsProject.instance().addMapLayer(layer)
