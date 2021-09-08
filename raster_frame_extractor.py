@@ -12,8 +12,10 @@ base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fi
 sys.path.append(os.path.join(base_path, '11.barata_layout'))
 from info.radar_info import RadarInfo
 
-def extract_raster_frame(path):
-    with rasterio.open(path) as src:
+def extract_raster_frame(data_path, output_path):
+    output_dir = os.path.dirname(output_path)
+
+    with rasterio.open(data_path) as src:
         crs = src.crs
         src_band = src.read(1)
         src_band[src_band > 0] = np.array(1)
@@ -23,7 +25,6 @@ def extract_raster_frame(path):
     geoms = [shape(geom) for geom, _ in shapes]
     values = [value for _, value in shapes]
 
-    fname = os.path.splitext(os.path.basename(path))[0]
     radar_info = RadarInfo(fname)
 
     if not crs:
@@ -37,13 +38,9 @@ def extract_raster_frame(path):
     gdf['POLARISASI'] = radar_info.pola
     gdf['DATETIME'] = str(radar_info.utc_datetime)
     
-    output_fname = f'{fname}_frame'
-    
-    output_path = os.path.dirname(path).replace('2.seonse_outputs','13.frames')
-    os.makedirs(output_path, exist_ok=True)
-    gdf.to_file(os.path.join(output_path, f'{output_fname}.shp'))
+    gdf.to_file(output_path)
 
-    zip_filename = os.path.join(output_path, f"{os.path.basename(output_path)}_frame.zip")
+    zip_filename = os.path.join(output_dir, f"{os.path.basename(output_path)}_frame.zip")
 
     types = [
         "*frame.shp",
@@ -63,7 +60,7 @@ def extract_raster_frame(path):
     if len(types) == len(frame_list):
         with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zip:
             for frame in frame_list:
-                zip.write(frame)
+                zip.write(frame, os.path.basename(frame))
 
     # layer = QgsVectorLayer(gdf.to_json(), output_fname, 'ogr')
     # QgsProject.instance().addMapLayer(layer)
@@ -73,9 +70,13 @@ def extract_raster_frame(path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--filename", help="Insert raster filename")
+    parser.add_argument("--output", help="Insert output filename")
 
     args = parser.parse_args()
 
-    path = args.filename
+    data_path = args.filename
+    output_path = args.output
+    # output_path = os.path.dirname(data_path).replace('2.seonse_outputs','13.frames')
+    os.makedirs(output_path, exist_ok=True)
 
-    frame_gdf = extract_raster_frame(path)
+    frame_gdf = extract_raster_frame(data_path)
