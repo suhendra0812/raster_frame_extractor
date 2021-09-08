@@ -43,7 +43,7 @@ def extract_raster_frame(path):
     os.makedirs(output_path, exist_ok=True)
     gdf.to_file(os.path.join(output_path, f'{output_fname}.shp'))
 
-    zip_filename = f"{os.path.basename(output_path)}_frame.zip"
+    zip_filename = os.path.join(output_path, f"{os.path.basename(output_path)}_frame.zip")
 
     types = [
         "*frame.shp",
