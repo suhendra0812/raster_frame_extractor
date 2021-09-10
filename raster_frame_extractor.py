@@ -1,4 +1,6 @@
-import os, sys, glob
+import os
+import sys
+import glob
 import argparse
 import numpy as np
 import rasterio
@@ -13,7 +15,9 @@ sys.path.append(os.path.join(base_path, '11.barata_layout'))
 from info.radar_info import RadarInfo
 
 def extract_raster_frame(data_path, output_path):
+    fname = os.path.basename(data_path)
     output_dir = os.path.dirname(output_path)
+    os.makedirs(output_dir, exist_ok=True)
 
     with rasterio.open(data_path) as src:
         crs = src.crs
@@ -50,7 +54,7 @@ def extract_raster_frame(data_path, output_path):
     ]
     frame_list = []
     for tp in types:
-        file_list = glob.glob(f"{output_path}/{tp}")
+        file_list = glob.glob(f"{output_dir}/{tp}")
         if len(file_list) > 0:
             file_type = file_list[0]
             frame_list.append(file_type)
@@ -77,6 +81,5 @@ if __name__ == "__main__":
     data_path = args.filename
     output_path = args.output
     # output_path = os.path.dirname(data_path).replace('2.seonse_outputs','13.frames')
-    os.makedirs(output_path, exist_ok=True)
 
-    frame_gdf = extract_raster_frame(data_path)
+    frame_gdf = extract_raster_frame(data_path, output_path)
