@@ -30,6 +30,7 @@ def extract_raster_frame(data_path, output_path):
     values = [value for _, value in shapes]
 
     radar_info = RadarInfo(fname)
+    local = radar_info.local
 
     if not crs:
         crs = "EPSG:4326"
@@ -44,7 +45,7 @@ def extract_raster_frame(data_path, output_path):
     
     gdf.to_file(output_path)
 
-    zip_filename = os.path.join(output_dir, f"{os.path.basename(output_path)}_frame.zip")
+    zip_filename = os.path.join(output_dir, f"{os.path.basename(output_dir).split('_')[0]}_{local}_frame.zip")
 
     types = [
         "*frame.shp",
@@ -61,7 +62,7 @@ def extract_raster_frame(data_path, output_path):
         else:
             print(f"File with {os.path.splitext(tp)[-1]} extension is unavailable")
 
-    if len(types) == len(frame_list):
+    if not os.path.exists(zip_filename):
         with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zip:
             for frame in frame_list:
                 zip.write(frame, os.path.basename(frame))
