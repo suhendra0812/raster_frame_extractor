@@ -14,7 +14,7 @@ base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fi
 sys.path.append(os.path.join(base_path, '11.barata_layout'))
 from info.radar_info import RadarInfo
 
-def extract_raster_frame(data_path, output_path):
+def extract_raster_frame(data_path, output_path, radar_info=None):
     fname = os.path.basename(data_path)
     output_dir = os.path.dirname(output_path)
     os.makedirs(output_dir, exist_ok=True)
@@ -29,7 +29,9 @@ def extract_raster_frame(data_path, output_path):
     geoms = [shape(geom) for geom, _ in shapes]
     values = [value for _, value in shapes]
 
-    radar_info = RadarInfo(fname)
+    if not radar_info:
+        radar_info = RadarInfo(fname)
+    
     local = radar_info.local
 
     if not crs:
