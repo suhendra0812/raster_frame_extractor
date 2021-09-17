@@ -42,7 +42,7 @@ def extract_raster_frame(data_path, output_path, radar_info=None):
     gdf = gdf.loc[[1]]
     gdf['SATELLITE'] = radar_info.rdr_fn
     gdf['SENSOR'] = radar_info.sensor
-    gdf['POLARIZATION'] = radar_info.pola
+    gdf['POLARISASI'] = radar_info.pola
     gdf['DATETIME'] = str(radar_info.utc_datetime)
     
     gdf.to_file(output_path)
