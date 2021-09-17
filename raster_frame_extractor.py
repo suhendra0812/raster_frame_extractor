@@ -40,9 +40,9 @@ def extract_raster_frame(data_path, output_path, radar_info=None):
     gdf = gpd.GeoDataFrame({'DN': values}, crs=crs, geometry=geoms)
     gdf = gdf.dissolve(by='DN')
     gdf = gdf.loc[[1]]
-    gdf['RADAR'] = radar_info.rdr_fn
-    gdf['MODE'] = radar_info.mode
-    gdf['POLARISASI'] = radar_info.pola
+    gdf['SATELLITE'] = radar_info.rdr_fn
+    gdf['SENSOR'] = radar_info.sensor
+    gdf['POLARIZATION'] = radar_info.pola
     gdf['DATETIME'] = str(radar_info.utc_datetime)
     
     gdf.to_file(output_path)
