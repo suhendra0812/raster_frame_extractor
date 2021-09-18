@@ -31,8 +31,6 @@ def extract_raster_frame(data_path, output_path, radar_info=None):
 
     if not radar_info:
         radar_info = RadarInfo(fname)
-    
-    local = radar_info.local
 
     if not crs:
         crs = "EPSG:4326"
@@ -46,28 +44,6 @@ def extract_raster_frame(data_path, output_path, radar_info=None):
     gdf['DATETIME'] = str(radar_info.utc_datetime)
     
     gdf.to_file(output_path)
-
-    zip_filename = os.path.join(output_dir, f"{os.path.basename(output_dir).split('_')[0]}_{local}_frame.zip")
-
-    types = [
-        "*frame.shp",
-        "*frame.dbf",
-        "*frame.prj",
-        "*frame.shx",
-    ]
-    frame_list = []
-    for tp in types:
-        file_list = glob.glob(f"{output_dir}/{tp}")
-        if len(file_list) > 0:
-            file_type = file_list[0]
-            frame_list.append(file_type)
-        else:
-            print(f"File with {os.path.splitext(tp)[-1]} extension is unavailable")
-
-    if not os.path.exists(zip_filename):
-        with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zip:
-            for frame in frame_list:
-                zip.write(frame, os.path.basename(frame))
 
     # layer = QgsVectorLayer(gdf.to_json(), output_fname, 'ogr')
     # QgsProject.instance().addMapLayer(layer)
