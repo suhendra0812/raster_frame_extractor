@@ -38,7 +38,7 @@ def extract_raster_frame(data_path, output_path, radar_info=None):
     gdf = gpd.GeoDataFrame({'DN': values}, crs=crs, geometry=geoms)
     gdf = gdf.dissolve(by='DN')
     gdf = gdf.loc[[1]]
-    gdf['SATELLITE'] = radar_info.rdr_fn
+    gdf['SATELLITE'] = radar_info.sat_fn
     gdf['SENSOR'] = radar_info.sensor
     gdf['POLARISASI'] = radar_info.pola
     gdf['DATETIME'] = str(radar_info.utc_datetime)
@@ -60,5 +60,8 @@ if __name__ == "__main__":
     data_path = args.filename
     output_path = args.output
     # output_path = os.path.dirname(data_path).replace('2.seonse_outputs','13.frames')
-
-    frame_gdf = extract_raster_frame(data_path, output_path)
+    data_paths = glob.glob(r"D:\BARATA\2.seonse_outputs\cosmo_skymed\2021*\*\*tif")
+    for data_path in data_paths:
+        output_path = data_path.replace("2.seonse_outputs", "13.frames").replace(".tif", "_frame.shp")
+        if not os.path.exists(output_path):
+            frame_gdf = extract_raster_frame(data_path, output_path)
