@@ -42,6 +42,8 @@ def extract_raster_frame(data_path, output_path, radar_info=None):
     gdf['SENSOR'] = radar_info.sensor
     gdf['POLARISASI'] = radar_info.pola
     gdf['DATETIME'] = str(radar_info.utc_datetime)
+
+    gdf.geometry = gdf.geometry.apply(lambda x: x.minimum_rotated_rectangle)
     
     gdf.to_file(output_path)
 
@@ -60,8 +62,7 @@ if __name__ == "__main__":
     data_path = args.filename
     output_path = args.output
     # output_path = os.path.dirname(data_path).replace('2.seonse_outputs','13.frames')
-    data_paths = glob.glob(r"D:\BARATA\2.seonse_outputs\cosmo_skymed\2021*\*\*tif")
+    data_paths = glob.glob(r"D:\BARATA\2.seonse_outputs\cosmo_skymed\201910\arafura_20191013_210916\*tif")
     for data_path in data_paths:
         output_path = data_path.replace("2.seonse_outputs", "13.frames").replace(".tif", "_frame.shp")
-        if not os.path.exists(output_path):
-            frame_gdf = extract_raster_frame(data_path, output_path)
+        frame_gdf = extract_raster_frame(data_path, output_path)
