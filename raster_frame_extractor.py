@@ -1,4 +1,5 @@
 import os
+import glob
 import sys
 import numpy as np
 import rasterio
@@ -11,7 +12,7 @@ base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fi
 sys.path.append(os.path.join(base_path, '11.barata_layout'))
 from info.radar_info import RadarInfo
 
-def extract_raster_frame(data_path, output_path, radar_info=None):
+def extract_raster_frame(data_path, output_path):
     fname = os.path.basename(data_path)
     output_dir = os.path.dirname(output_path)
     os.makedirs(output_dir, exist_ok=True)
@@ -26,8 +27,13 @@ def extract_raster_frame(data_path, output_path, radar_info=None):
     geoms = [shape(geom) for geom, _ in shapes]
     values = [value for _, value in shapes]
 
-    if not radar_info:
-        radar_info = RadarInfo(fname)
+    radar_info = RadarInfo(fname)
+    if radar_info.sat_name == "RADARSAT-2":
+        metadata_list = glob.glob(
+            os.path.join(os.path.dirname(data_path), "product.xml")
+        )
+        for metadata in metadata_list:
+            radar_info = RadarInfo(fname, metadata)
 
     if not crs:
         crs = "EPSG:4326"
