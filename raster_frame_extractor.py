@@ -1,13 +1,10 @@
 import os
 import sys
-import glob
-import argparse
 import numpy as np
 import rasterio
 import rasterio.features
 from shapely.geometry import shape
 import geopandas as gpd
-import zipfile
 
 base_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -51,18 +48,3 @@ def extract_raster_frame(data_path, output_path, radar_info=None):
     # QgsProject.instance().addMapLayer(layer)
 
     return gdf
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--filename", help="Insert raster filename")
-    parser.add_argument("--output", help="Insert output filename")
-
-    args = parser.parse_args()
-
-    data_path = args.filename
-    output_path = args.output
-    # output_path = os.path.dirname(data_path).replace('2.seonse_outputs','13.frames')
-    data_paths = glob.glob(r"D:\BARATA\2.seonse_outputs\cosmo_skymed\201910\arafura_20191013_210916\*tif")
-    for data_path in data_paths:
-        output_path = data_path.replace("2.seonse_outputs", "13.frames").replace(".tif", "_frame.shp")
-        frame_gdf = extract_raster_frame(data_path, output_path)
