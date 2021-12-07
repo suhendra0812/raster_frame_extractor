@@ -39,12 +39,17 @@ def extract_raster_frame(data_path, output_path):
         crs = "EPSG:4326"
 
     gdf = gpd.GeoDataFrame({'DN': values}, crs=crs, geometry=geoms)
-    gdf = gdf.dissolve(by='DN')
-    gdf = gdf.loc[[1]]
+    gdf = gdf.dissolve(by='DN', as_index=False)
+    gdf = gdf.loc[gdf['DN'] == 1]
     gdf['SATELLITE'] = radar_info.sat_fn
     gdf['SENSOR'] = radar_info.sensor
+    gdf['BEAM'] = radar_info.beam
     gdf['POLARISASI'] = radar_info.pola
+    gdf['DIRECTION'] = radar_info.dire
+    gdf['SIDE'] = radar_info.side
     gdf['DATETIME'] = str(radar_info.utc_datetime)
+
+    gdf.drop(columns=['DN'], inplace=True)
 
     gdf.geometry = gdf.geometry.apply(lambda x: x.minimum_rotated_rectangle)
     
