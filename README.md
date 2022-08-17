@@ -1,1 +1,3 @@
-# extract_raster_frame
+# Raster Frame Extractor
+
+Extract raster frame/footprint from raster and export to shapefile.
