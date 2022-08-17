@@ -10,7 +10,7 @@ Fiona @ file:///D:/SOFTWARE/python-module/python39/Fiona-1.8.20-cp39-cp39-win_am
 GDAL @ file:///D:/SOFTWARE/python-module/python39/GDAL-3.3.1-cp39-cp39-win_amd64.whl
 geopandas==0.9.0
 munch==2.5.0
-numpy==1.21.1
+numpy==1.22.0
 pandas==1.3.1
 pyparsing==2.4.7
 pyproj==3.1.0
